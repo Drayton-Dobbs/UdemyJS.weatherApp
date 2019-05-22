@@ -3,9 +3,9 @@ const card = document.querySelector('.card');
 const details = document.querySelector('.details');
 const time = document.querySelector('img.time');
 const icon = document.querySelector('.icon img');
+const forecast = new Forecast();
 
-
-// function to update html from obj
+//function to update html from obj
 
 const updateUI = (data) => {
 
@@ -29,7 +29,7 @@ const updateUI = (data) => {
 
     // ternary operator : works like if / else
 
-    let timeSrc = weather.IsDayTime ? 'scripts/img/day.svg' : 'scripts/img/night.svg';
+    let timeSrc = weather.IsDayTime ? 'img/day.svg' : 'img/night.svg';
 
 
     // for reference
@@ -50,19 +50,6 @@ const updateUI = (data) => {
 }
 
 
-// creating / setting obj with details 
-
-const updateCity = async (city) => {
-
-    const cityDets = await getCity(city);
-    const weather = await getWeather(cityDets.Key);
-
-    return {
-        cityDets: cityDets,
-        weather: weather
-    };
-
-}
 
 cityForm.addEventListener('submit', e => {
     e.preventDefault();
@@ -70,10 +57,17 @@ cityForm.addEventListener('submit', e => {
     const city = cityForm.city.value.trim();
     cityForm.reset();
 
-    updateCity(city)
+    forecast.updateCity(city)
         .then(data => updateUI(data))
         .catch(err => console.log(err));
 
+    // set local storage
+    localStorage.setItem('city', city);
+
 });
 
-// update night / day img
+if(localStorage.getItem('city')){
+    forecast.updateCity(localStorage.getItem('city'))
+    .then(data => updateUI(data))
+    .catch(err => console.log(err))
+};
